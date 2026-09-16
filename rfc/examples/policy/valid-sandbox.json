@@ -1,0 +1,33 @@
+{
+  "spec": "anytool-policy",
+  "specVersion": "1",
+  "policyId": "sandbox-demo",
+  "issuedAt": "2026-09-16T12:00:00Z",
+  "environment": "sandbox",
+  "timeoutMs": 5000,
+  "kinds": {
+    "fs": {
+      "allowedRoots": ["/workspace"],
+      "blockedExtensions": [".env", ".pem", ".key"],
+      "readOnlyPaths": ["/workspace/readonly"],
+      "maxFileSizeBytes": 1048576
+    },
+    "db": {
+      "allowedTables": ["orders"],
+      "allowedActions": ["find"],
+      "mutationLimitRows": 10,
+      "requireWhere": true
+    },
+    "payment": {
+      "maxAmountCents": 5000,
+      "allowedCurrencies": ["usd"],
+      "allowedPurposes": ["invoice"],
+      "merchantId": "acct_demo"
+    },
+    "logger": {
+      "allowedLevels": ["info", "warn", "error"],
+      "maxPayloadBytes": 4096,
+      "redactKeys": ["password", "token", "secret"]
+    }
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://anytool.dev/rfc/schemas/policy.schema.json",
+  "title": "AnyToolPolicyDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["spec", "specVersion", "policyId", "issuedAt", "environment", "kinds"],
+  "properties": {
+    "spec": { "const": "anytool-policy" },
+    "specVersion": { "const": "1" },
+    "policyId": { "type": "string", "minLength": 1 },
+    "issuedAt": { "type": "string", "format": "date-time" },
+    "environment": { "enum": ["sandbox", "staging", "production"] },
+    "timeoutMs": { "type": "integer", "minimum": 1, "maximum": 300000 },
+    "maxMemoryMb": { "type": "integer", "minimum": 1, "maximum": 65536 },
+    "kinds": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fs": { "$ref": "#/$defs/fs" },
+        "net": { "$ref": "#/$defs/net" },
+        "db": { "$ref": "#/$defs/db" },
+        "payment": { "$ref": "#/$defs/payment" },
+        "os": { "$ref": "#/$defs/os" },
+        "shell": { "$ref": "#/$defs/shell" },
+        "wasm": { "$ref": "#/$defs/wasm" },
+        "event": { "$ref": "#/$defs/event" },
+        "auth": { "$ref": "#/$defs/auth" },
+        "crypto": { "$ref": "#/$defs/crypto" },
+        "secret": { "$ref": "#/$defs/secret" },
+        "logger": { "$ref": "#/$defs/logger" },
+        "email": { "$ref": "#/$defs/message" },
+        "sms": { "$ref": "#/$defs/message" }
+      }
+    }
+  },
+  "$defs": {
+    "fs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowedRoots", "maxFileSizeBytes"],
+      "properties": {
+        "allowedRoots": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "blockedExtensions": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "readOnlyPaths": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "maxFileSizeBytes": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "net": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowedHosts", "maxPayloadSizeBytes"],
+      "properties": {
+        "allowedHosts": { "type": "array", "items": { "type": "string" } },
+        "blockedPorts": { "type": "array", "items": { "type": "integer" }, "default": [] },
+        "maxPayloadSizeBytes": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "db": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowedTables", "allowedActions", "mutationLimitRows"],
+      "properties": {
+        "allowedTables": { "type": "array", "items": { "type": "string" } },
+        "allowedActions": {
+          "type": "array",
+          "items": { "enum": ["find", "insert", "update", "remove"] }
+        },
+        "mutationLimitRows": { "type": "integer", "minimum": 0 },
+        "requireWhere": { "type": "boolean", "default": true }
+      }
+    },
+    "payment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxAmountCents", "allowedCurrencies", "allowedPurposes", "merchantId"],
+      "properties": {
+        "maxAmountCents": { "type": "integer", "minimum": 0, "maximum": 9007199254740991 },
+        "allowedCurrencies": { "type": "array", "items": { "type": "string", "minLength": 3 } },
+        "allowedPurposes": { "type": "array", "items": { "type": "string" } },
+        "merchantId": { "type": "string", "minLength": 1 }
+      }
+    },
+    "os": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allowMetrics": { "type": "boolean", "default": false },
+        "allowConstraints": { "type": "boolean", "default": false }
+      }
+    },
+    "shell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowedBinaries"],
+      "properties": {
+        "allowedBinaries": { "type": "array", "items": { "type": "string" } },
+        "allowedCwds": { "type": "array", "items": { "type": "string" }, "default": [] },
+        "timeoutMs": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "wasm": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowedModules"],
+      "properties": {
+        "allowedModules": { "type": "array", "items": { "type": "string" } },
+        "maxFuel": { "type": "integer", "minimum": 0 },
+        "maxMemoryPages": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowedKeys"],
+      "properties": {
+        "allowedKeys": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "auth": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "allowWhoami": { "type": "boolean", "default": false },
+        "allowedAssertRoles": { "type": "array", "items": { "type": "string" }, "default": [] }
+      }
+    },
+    "crypto": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowedAlgorithms"],
+      "properties": {
+        "allowedAlgorithms": { "type": "array", "items": { "type": "string" } },
+        "allowRandom": { "type": "boolean", "default": false }
+      }
+    },
+    "secret": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowedNames", "allowedPurposes"],
+      "properties": {
+        "allowedNames": { "type": "array", "items": { "type": "string" } },
+        "allowedPurposes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "logger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowedLevels", "maxPayloadBytes"],
+      "properties": {
+        "allowedLevels": {
+          "type": "array",
+          "items": { "enum": ["debug", "info", "warn", "error"] }
+        },
+        "maxPayloadBytes": { "type": "integer", "minimum": 0 },
+        "redactKeys": { "type": "array", "items": { "type": "string" }, "default": [] }
+      }
+    },
+    "message": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowedRecipients", "allowedTemplateIds"],
+      "properties": {
+        "allowedRecipients": { "type": "array", "items": { "type": "string" } },
+        "allowedTemplateIds": { "type": "array", "items": { "type": "string" } },
+        "maxPerMinute": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

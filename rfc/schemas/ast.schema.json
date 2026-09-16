@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://anytool.dev/rfc/schemas/ast.schema.json",
+  "title": "AnyToolCommandAst",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol", "module", "action", "target", "arguments", "policyId", "policyVersion"],
+  "properties": {
+    "protocol": { "const": "anytool-v1" },
+    "module": {
+      "enum": [
+        "fs", "net", "db", "payment", "os", "shell", "wasm",
+        "event", "auth", "crypto", "secret", "logger", "email", "sms"
+      ]
+    },
+    "action": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+    "target": { "type": "string" },
+    "arguments": { "type": "object" },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "timeoutMs": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "policyId": { "type": "string", "minLength": 1 },
+    "policyVersion": { "const": "1" }
+  }
+}

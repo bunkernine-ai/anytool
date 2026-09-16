@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://anytool.dev/rfc/schemas/intent.schema.json",
+  "title": "AnyToolStrongIntent",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action", "path"],
+      "properties": {
+        "channel": { "const": "fs" },
+        "action": { "enum": ["read", "list"] },
+        "path": { "type": "string", "minLength": 1 }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action", "path", "body"],
+      "properties": {
+        "channel": { "const": "fs" },
+        "action": { "const": "write" },
+        "path": { "type": "string", "minLength": 1 },
+        "body": {}
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action", "path"],
+      "properties": {
+        "channel": { "const": "fs" },
+        "action": { "const": "remove" },
+        "path": { "type": "string", "minLength": 1 }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action", "host", "path", "method"],
+      "properties": {
+        "channel": { "const": "net" },
+        "action": { "const": "request" },
+        "host": { "type": "string", "minLength": 1 },
+        "path": { "type": "string" },
+        "method": { "enum": ["GET", "POST", "PUT", "DELETE"] },
+        "port": { "type": "integer" },
+        "body": {}
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action", "table"],
+      "properties": {
+        "channel": { "const": "db" },
+        "action": { "enum": ["find", "update", "remove"] },
+        "table": { "type": "string", "minLength": 1 },
+        "where": { "type": "object" },
+        "columns": { "type": "array", "items": { "type": "string" } },
+        "limit": { "type": "integer", "minimum": 1 },
+        "row": { "type": "object" }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action", "table", "row"],
+      "properties": {
+        "channel": { "const": "db" },
+        "action": { "const": "insert" },
+        "table": { "type": "string", "minLength": 1 },
+        "row": { "type": "object" }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action", "amountCents", "currency", "purpose", "invoiceId"],
+      "properties": {
+        "channel": { "const": "payment" },
+        "action": { "const": "charge" },
+        "amountCents": { "type": "integer", "minimum": 0 },
+        "currency": { "type": "string", "minLength": 3 },
+        "purpose": { "type": "string", "minLength": 1 },
+        "invoiceId": { "type": "string", "minLength": 1 }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action", "amountCents", "currency", "purpose"],
+      "properties": {
+        "channel": { "const": "payment" },
+        "action": { "const": "refund" },
+        "amountCents": { "type": "integer", "minimum": 0 },
+        "currency": { "type": "string", "minLength": 3 },
+        "purpose": { "type": "string", "minLength": 1 },
+        "invoiceId": { "type": "string" },
+        "refundId": { "type": "string" }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action"],
+      "properties": {
+        "channel": { "const": "os" },
+        "action": { "enum": ["metrics", "constraints"] }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action", "argv"],
+      "properties": {
+        "channel": { "const": "shell" },
+        "action": { "const": "run" },
+        "argv": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "cwd": { "type": "string" }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action", "moduleId", "export"],
+      "properties": {
+        "channel": { "const": "wasm" },
+        "action": { "const": "invoke" },
+        "moduleId": { "type": "string", "minLength": 1 },
+        "export": { "type": "string", "minLength": 1 },
+        "args": { "type": "array" }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action", "key"],
+      "properties": {
+        "channel": { "const": "event" },
+        "action": { "enum": ["emit", "wait"] },
+        "key": { "type": "string", "minLength": 1 },
+        "data": {}
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action"],
+      "properties": {
+        "channel": { "const": "auth" },
+        "action": { "const": "whoami" }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action", "role"],
+      "properties": {
+        "channel": { "const": "auth" },
+        "action": { "const": "assert" },
+        "role": { "type": "string", "minLength": 1 }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action", "algorithm", "data"],
+      "properties": {
+        "channel": { "const": "crypto" },
+        "action": { "enum": ["hash", "hmac", "sign", "verify"] },
+        "algorithm": { "type": "string" },
+        "data": { "type": "string" }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action"],
+      "properties": {
+        "channel": { "const": "crypto" },
+        "action": { "const": "random" },
+        "bytes": { "type": "integer", "minimum": 1, "maximum": 1024 }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action", "name", "purpose"],
+      "properties": {
+        "channel": { "const": "secret" },
+        "action": { "const": "use" },
+        "name": { "type": "string", "minLength": 1 },
+        "purpose": { "type": "string", "minLength": 1 }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action", "event"],
+      "properties": {
+        "channel": { "const": "logger" },
+        "action": { "enum": ["debug", "info", "warn", "error"] },
+        "event": { "type": "string", "minLength": 1 },
+        "data": { "type": "object" }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["channel", "action", "to", "templateId"],
+      "properties": {
+        "channel": { "enum": ["email", "sms"] },
+        "action": { "const": "send" },
+        "to": { "type": "string", "minLength": 1 },
+        "templateId": { "type": "string", "minLength": 1 },
+        "vars": { "type": "object" }
+      }
+    }
+  ]
+}
